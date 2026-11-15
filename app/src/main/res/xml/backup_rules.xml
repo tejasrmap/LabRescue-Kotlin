@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Explicitly exclude sensitive databases and credentials from any backup mechanism -->
+    <exclude domain="database" path="labrescue.db" />
+    <exclude domain="database" path="labrescue.db-wal" />
+    <exclude domain="database" path="labrescue.db-shm" />
+    <exclude domain="sharedpref" path="labrescue_prefs.xml" />
+</full-backup-content>

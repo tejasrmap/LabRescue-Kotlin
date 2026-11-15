@@ -1,0 +1,98 @@
+[
+  {
+    "id": "prog",
+    "name": "Programming & Debugging",
+    "code": "CSE101",
+    "description": "Programming fundamentals, language runtime failures, memory, control flow, and concurrency.",
+    "iconName": "code",
+    "totalScenarios": 25
+  },
+  {
+    "id": "db",
+    "name": "Database Systems",
+    "code": "CSC204",
+    "description": "SQL, relational modeling, transactions, constraints, performance, and secure data access.",
+    "iconName": "database",
+    "totalScenarios": 20
+  },
+  {
+    "id": "net",
+    "name": "Computer Networks",
+    "code": "NET301",
+    "description": "IP addressing, routing, transport protocols, DNS, firewalls, and packet diagnostics.",
+    "iconName": "network_check",
+    "totalScenarios": 20
+  },
+  {
+    "id": "os",
+    "name": "Operating Systems",
+    "code": "OS302",
+    "description": "Processes, scheduling, synchronization, virtual memory, filesystems, and resource management.",
+    "iconName": "memory",
+    "totalScenarios": 20
+  },
+  {
+    "id": "git",
+    "name": "Git & Version Control",
+    "code": "SWE202",
+    "description": "Branches, remotes, merge/rebase, repository hygiene, and collaboration workflows.",
+    "iconName": "code",
+    "totalScenarios": 15
+  },
+  {
+    "id": "web",
+    "name": "Web Development",
+    "code": "WEB201",
+    "description": "Browser behavior, frontend state, HTTP APIs, deployment, and backend integration.",
+    "iconName": "language",
+    "totalScenarios": 20
+  },
+  {
+    "id": "android",
+    "name": "Android Development",
+    "code": "MAD301",
+    "description": "Kotlin, Compose, lifecycle, navigation, Room, Gradle, and Android platform behavior.",
+    "iconName": "phone_android",
+    "totalScenarios": 15
+  },
+  {
+    "id": "algo",
+    "name": "Algorithms & Data Structures",
+    "code": "CSC203",
+    "description": "Searching, sorting, graph traversal, dynamic programming, data structures, and complexity.",
+    "iconName": "account_tree",
+    "totalScenarios": 15
+  },
+  {
+    "id": "linux",
+    "name": "Linux & Developer Tooling",
+    "code": "SYS201",
+    "description": "Shell, permissions, environment variables, services, storage, and command-line diagnostics.",
+    "iconName": "terminal",
+    "totalScenarios": 15
+  },
+  {
+    "id": "security",
+    "name": "Cybersecurity & Secure Coding",
+    "code": "SEC301",
+    "description": "Authentication, authorization, secrets, TLS, input handling, and secure configuration.",
+    "iconName": "security",
+    "totalScenarios": 15
+  },
+  {
+    "id": "data",
+    "name": "Data Science & Analytics",
+    "code": "BDA301",
+    "description": "Data ingestion, cleaning, analysis, machine learning validation, and reproducibility.",
+    "iconName": "analytics",
+    "totalScenarios": 15
+  },
+  {
+    "id": "testing",
+    "name": "Software Testing & APIs",
+    "code": "SWE301",
+    "description": "Unit, integration, contract, UI, performance, and continuous-integration testing.",
+    "iconName": "bug",
+    "totalScenarios": 15
+  }
+]
