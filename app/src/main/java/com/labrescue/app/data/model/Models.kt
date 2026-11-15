@@ -27,6 +27,8 @@ data class UserProfile(
     val year: String = "Year 1",
     @ColumnInfo(name = "target_goal")
     val targetGoal: String = "Master Systems & Database Troubleshooting",
+    @ColumnInfo(name = "enrolled_subjects")
+    val enrolledSubjects: String = "db,net,prog,os",
     @ColumnInfo(name = "total_rescues")
     val totalRescues: Int = 0,
     @ColumnInfo(name = "successful_rescues")
@@ -51,6 +53,8 @@ data class UserAccount(
     val year: String,
     @ColumnInfo(name = "target_goal")
     val targetGoal: String,
+    @ColumnInfo(name = "enrolled_subjects")
+    val enrolledSubjects: String = "db,net,prog,os",
     @ColumnInfo(name = "created_at")
     val createdAt: Long = System.currentTimeMillis()
 )

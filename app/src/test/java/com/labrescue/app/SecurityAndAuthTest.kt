@@ -125,6 +125,7 @@ class SecurityAndAuthTest {
         assertEquals("New user must start with 0 streak days", 0, newProfile.streakDays)
         assertEquals("New user name must match input", "Alex Morgan", newProfile.name)
         assertEquals("New user programme must match input", "BSc Computer Science", newProfile.programme)
+        assertEquals("New user enrolled subjects must match default", "db,net,prog,os", newProfile.enrolledSubjects)
     }
 
     @Test

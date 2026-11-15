@@ -17,7 +17,7 @@ import com.labrescue.app.data.model.UserProfile
         Attempt::class,
         Mistake::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

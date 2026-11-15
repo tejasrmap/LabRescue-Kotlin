@@ -31,7 +31,7 @@ class LabRescueRepository(context: Context) {
         private const val PREFS_NAME = "labrescue_prefs"
         private const val KEY_ONBOARDING_COMPLETED = "has_completed_onboarding"
         private const val KEY_LOGGED_IN_USER_ID = "logged_in_user_id"
-        private const val KEY_INITIAL_ROOM_SEED_V5 = "initial_room_seed_v5"
+        private const val KEY_INITIAL_ROOM_SEED_V6 = "initial_room_seed_v6"
     }
 
     private val database = AppDatabase.getInstance(context)
@@ -78,12 +78,12 @@ class LabRescueRepository(context: Context) {
 
     init {
         repositoryScope.launch {
-            val hasSeeded = prefs.getBoolean(KEY_INITIAL_ROOM_SEED_V5, false)
+            val hasSeeded = prefs.getBoolean(KEY_INITIAL_ROOM_SEED_V6, false)
             val demoAccount = userAccountDao.getAccountByEmail(DatabaseSeedData.DEMO_EMAIL)
 
             if (!hasSeeded || demoAccount == null) {
                 seedDemoDatasetTransaction(preserveProfileIdentity = false)
-                prefs.edit().putBoolean(KEY_INITIAL_ROOM_SEED_V5, true).apply()
+                prefs.edit().putBoolean(KEY_INITIAL_ROOM_SEED_V6, true).apply()
             }
 
             // Restore logged in user session if present
@@ -233,7 +233,8 @@ class LabRescueRepository(context: Context) {
         password: String,
         programme: String,
         year: String,
-        targetGoal: String
+        targetGoal: String,
+        enrolledSubjects: String = "db,net,prog,os"
     ): Result<UserAccount> = withContext(Dispatchers.IO) {
         val nameErr = SecurityUtils.validateFullName(name)
         if (nameErr != null) return@withContext Result.failure(IllegalArgumentException(nameErr))
@@ -267,6 +268,7 @@ class LabRescueRepository(context: Context) {
             programme = programme.trim(),
             year = year.trim(),
             targetGoal = targetGoal.trim().ifEmpty { "Master Diagnostic Troubleshooting" },
+            enrolledSubjects = enrolledSubjects.ifBlank { "db,net,prog,os" },
             createdAt = System.currentTimeMillis()
         )
 
@@ -277,6 +279,7 @@ class LabRescueRepository(context: Context) {
             programme = programme.trim(),
             year = year.trim(),
             targetGoal = targetGoal.trim().ifEmpty { "Master Diagnostic Troubleshooting" },
+            enrolledSubjects = enrolledSubjects.ifBlank { "db,net,prog,os" },
             totalRescues = 0,
             successfulRescues = 0,
             streakDays = 0
@@ -372,12 +375,13 @@ class LabRescueRepository(context: Context) {
     }
 
     // UPDATE operation: Update learner credentials & target goal in Room
-    fun updateProfile(name: String, programme: String, year: String, targetGoal: String) {
+    fun updateProfile(name: String, programme: String, year: String, targetGoal: String, enrolledSubjects: String? = null) {
         val updated = _userProfile.value.copy(
             name = name.trim().ifEmpty { _userProfile.value.name },
             programme = programme.trim().ifEmpty { _userProfile.value.programme },
             year = year.trim().ifEmpty { _userProfile.value.year },
-            targetGoal = targetGoal.trim().ifEmpty { _userProfile.value.targetGoal }
+            targetGoal = targetGoal.trim().ifEmpty { _userProfile.value.targetGoal },
+            enrolledSubjects = enrolledSubjects ?: _userProfile.value.enrolledSubjects
         )
         _userProfile.value = updated
 
@@ -389,7 +393,8 @@ class LabRescueRepository(context: Context) {
                         name = updated.name,
                         programme = updated.programme,
                         year = updated.year,
-                        targetGoal = updated.targetGoal
+                        targetGoal = updated.targetGoal,
+                        enrolledSubjects = updated.enrolledSubjects
                     )
                 )
             } else {
@@ -403,7 +408,8 @@ class LabRescueRepository(context: Context) {
                     name = updated.name,
                     programme = updated.programme,
                     year = updated.year,
-                    targetGoal = updated.targetGoal
+                    targetGoal = updated.targetGoal,
+                    enrolledSubjects = updated.enrolledSubjects
                 )
                 userAccountDao.updateAccount(updatedAccount)
                 _currentAccount.value = updatedAccount

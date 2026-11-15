@@ -77,8 +77,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.labrescue.app.data.db.SampleData
 import com.labrescue.app.data.security.SecurityUtils
 import com.labrescue.app.ui.components.AdaptiveContainer
 import com.labrescue.app.ui.theme.CardBorderColor
@@ -132,6 +134,11 @@ fun SignUpScreen(
     var isProgrammeDropdownOpen by remember { mutableStateOf(false) }
     var academicYear by remember { mutableStateOf(ACADEMIC_YEARS[1]) }
     var targetGoal by remember { mutableStateOf(GOAL_PRESETS[0]) }
+
+    val subjectsList = remember { SampleData.subjects }
+    var selectedSubjectIds by remember {
+        mutableStateOf(setOf("db", "net", "prog", "os"))
+    }
 
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
@@ -193,6 +200,11 @@ fun SignUpScreen(
             return
         }
 
+        if (selectedSubjectIds.isEmpty()) {
+            errorMessage = "Please select at least one coursework subject module"
+            return
+        }
+
         isLoading = true
         coroutineScope.launch {
             val result = viewModel.signUp(
@@ -201,7 +213,8 @@ fun SignUpScreen(
                 password = password,
                 programme = programme,
                 year = academicYear,
-                targetGoal = targetGoal.trim()
+                targetGoal = targetGoal.trim(),
+                enrolledSubjects = selectedSubjectIds.joinToString(",")
             )
             isLoading = false
             result.onSuccess {
@@ -519,7 +532,154 @@ fun SignUpScreen(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    // Field 5: Target Learning Goal (With Chips)
+                    // Field 5: Enrolled Coursework Subjects (Selectable Modules Grid)
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Enrolled Coursework Subjects *",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    color = if (selectedSubjectIds.isEmpty()) ErrorRose else TextMediumEmphasis,
+                                    fontSize = 11.5.sp
+                                )
+                            )
+                            Text(
+                                text = "${selectedSubjectIds.size} of ${subjectsList.size} selected",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    color = if (selectedSubjectIds.isEmpty()) ErrorRose else CyanNeon,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        // Quick Selector Chips
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(if (selectedSubjectIds.size == subjectsList.size) CyanNeon.copy(alpha = 0.16f) else Color(0xFF070B14))
+                                    .border(1.dp, if (selectedSubjectIds.size == subjectsList.size) CyanNeon else CardBorderColor.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                                    .clickable { selectedSubjectIds = subjectsList.map { it.id }.toSet() }
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text("Select All", color = if (selectedSubjectIds.size == subjectsList.size) CyanNeon else TextMediumEmphasis, fontSize = 10.5.sp)
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color(0xFF070B14))
+                                    .border(1.dp, CardBorderColor.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                                    .clickable { selectedSubjectIds = setOf("db", "net", "prog", "os").filter { id -> subjectsList.any { it.id == id } }.toSet() }
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text("Core 4", color = CyanNeon, fontSize = 10.5.sp)
+                            }
+                            if (selectedSubjectIds.isNotEmpty()) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(0xFF070B14))
+                                        .border(1.dp, CardBorderColor.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                                        .clickable { selectedSubjectIds = emptySet() }
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Text("Clear", color = TextLowEmphasis, fontSize = 10.5.sp)
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // 2-column grid of subject tiles
+                        Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                            subjectsList.chunked(2).forEach { rowSubjects ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    rowSubjects.forEach { subject ->
+                                        val isSelected = subject.id in selectedSubjectIds
+                                        Row(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .background(
+                                                    if (isSelected) CyanNeon.copy(alpha = 0.12f)
+                                                    else Color(0xFF070B14)
+                                                )
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = if (isSelected) CyanNeon.copy(alpha = 0.75f)
+                                                    else CardBorderColor.copy(alpha = 0.5f),
+                                                    shape = RoundedCornerShape(10.dp)
+                                                )
+                                                .clickable {
+                                                    selectedSubjectIds = if (isSelected) {
+                                                        selectedSubjectIds - subject.id
+                                                    } else {
+                                                        selectedSubjectIds + subject.id
+                                                    }
+                                                }
+                                                .padding(horizontal = 10.dp, vertical = 8.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(18.dp)
+                                                    .clip(RoundedCornerShape(4.dp))
+                                                    .background(if (isSelected) CyanNeon else ObsidianBg)
+                                                    .border(1.dp, if (isSelected) CyanNeon else CardBorderColor, RoundedCornerShape(4.dp)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                if (isSelected) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Check,
+                                                        contentDescription = null,
+                                                        tint = ObsidianBg,
+                                                        modifier = Modifier.size(13.dp)
+                                                    )
+                                                }
+                                            }
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text(
+                                                    text = subject.code,
+                                                    style = MaterialTheme.typography.labelSmall.copy(
+                                                        color = if (isSelected) CyanNeon else TextLowEmphasis,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 10.sp
+                                                    )
+                                                )
+                                                Text(
+                                                    text = subject.name,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    style = MaterialTheme.typography.bodySmall.copy(
+                                                        color = if (isSelected) TextWhite else TextMediumEmphasis,
+                                                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                                        fontSize = 11.5.sp
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                    if (rowSubjects.size == 1) {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Field 6: Target Learning Goal (With Chips)
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "Diagnostic Troubleshooting Goal *",

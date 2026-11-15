@@ -56,9 +56,10 @@ class DashboardViewModel(private val repository: LabRescueRepository) : ViewMode
         password: String,
         programme: String,
         year: String,
-        targetGoal: String
+        targetGoal: String,
+        enrolledSubjects: String = "db,net,prog,os"
     ): Result<UserAccount> {
-        return repository.signUp(name, email, password, programme, year, targetGoal)
+        return repository.signUp(name, email, password, programme, year, targetGoal, enrolledSubjects)
     }
 
     suspend fun loginAsDemoStudent(): Result<UserAccount> {
@@ -69,8 +70,8 @@ class DashboardViewModel(private val repository: LabRescueRepository) : ViewMode
         repository.logout()
     }
 
-    fun updateProfile(name: String, programme: String, year: String, targetGoal: String) {
-        repository.updateProfile(name, programme, year, targetGoal)
+    fun updateProfile(name: String, programme: String, year: String, targetGoal: String, enrolledSubjects: String? = null) {
+        repository.updateProfile(name, programme, year, targetGoal, enrolledSubjects)
     }
 
     fun completeOnboarding() {

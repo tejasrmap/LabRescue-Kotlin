@@ -39,6 +39,9 @@ import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -428,6 +431,64 @@ fun ProfileSettingsContent(
                                             lineHeight = 17.sp
                                         )
                                     )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // Enrolled Subjects Badges
+                            val enrolledIds = remember(userProfile.enrolledSubjects) {
+                                userProfile.enrolledSubjects.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+                            }
+                            if (enrolledIds.isNotEmpty()) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.School,
+                                        contentDescription = null,
+                                        tint = IndigoNeon,
+                                        modifier = Modifier.size(15.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "ENROLLED SUBJECTS (${enrolledIds.size}):",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            color = TextLowEmphasis,
+                                            fontSize = 9.5.sp,
+                                            letterSpacing = 0.8.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    enrolledIds.forEach { id ->
+                                        val subj = com.labrescue.app.data.db.SampleData.subjects.find { it.id == id }
+                                        val label = subj?.code ?: id.uppercase(java.util.Locale.ROOT)
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(6.dp))
+                                                .background(CyanNeon.copy(alpha = 0.12f))
+                                                .border(1.dp, CyanNeon.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                        ) {
+                                            Text(
+                                                text = if (subj != null) "${subj.code} • ${subj.name}" else label,
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    color = CyanNeon,
+                                                    fontSize = 10.5.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            )
+                                        }
+                                    }
                                 }
                             }
 
